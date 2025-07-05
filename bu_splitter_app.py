@@ -10,9 +10,9 @@ from datetime import datetime
 
 # --- Load Secure Credentials from Streamlit Secrets ---
 SENDER_EMAIL = st.secrets["SENDER_EMAIL"]
-SENDER_NAME = "BU Exporter"
+SENDER_NAME = st.secrets["SENDER_NAME"]
 APP_PASSWORD = st.secrets["APP_PASSWORD"]
-DEFAULT_RECIPIENTS = ["recipient1@example.com", "recipient2@example.com"]
+DEFAULT_RECIPIENTS = st.secrets["DEFAULT_RECIPIENTS"]
 
 st.set_page_config(page_title="BU Splitter & Mailer", layout="centered")
 st.title("📂 BU Splitter & Email Tool")
