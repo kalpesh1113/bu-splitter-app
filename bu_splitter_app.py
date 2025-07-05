@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import os
 import io
-import zipfile
 import smtplib
 from email.message import EmailMessage
 from email.utils import formataddr
@@ -44,39 +43,25 @@ if uploaded_file:
                 if not selected_bu:
                     st.warning("Please select at least one BU.")
                 else:
-                    # Generate files
-                    zip_buffer = io.BytesIO()
-                    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
-                        for bu in selected_bu:
-                            bu_df = df[df["BU"] == bu]
-                            if not bu_df.empty:
-                                excel_bytes = io.BytesIO()
-                                bu_df.to_excel(excel_bytes, index=False, engine='openpyxl')
-                                zipf.writestr(f"BU_{bu}.xlsx", excel_bytes.getvalue())
-
-                    st.success(f"{len(selected_bu)} BU files exported!")
-                    st.download_button(
-                        label="📦 Download All as ZIP",
-                        data=zip_buffer.getvalue(),
-                        file_name="BU_Files.zip",
-                        mime="application/zip"
-                    )
+                    # Generate and download files (no zip)
+                    for bu in selected_bu:
+                        bu_df = df[df["BU"] == bu]
+                        if not bu_df.empty:
+                            towrite = io.BytesIO()
+                            bu_df.to_excel(towrite, index=False, engine='openpyxl')
+                            towrite.seek(0)
+                            st.download_button(
+                                label=f"Download BU {bu}",
+                                data=towrite,
+                                file_name=f"BU_{bu}.xlsx",
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            )
 
             if st.button("📤 Send Email with BU Files"):
                 if not selected_bu:
                     st.warning("Please select at least one BU.")
                 else:
                     try:
-                        # Prepare ZIP
-                        zip_buffer = io.BytesIO()
-                        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
-                            for bu in selected_bu:
-                                bu_df = df[df["BU"] == bu]
-                                if not bu_df.empty:
-                                    excel_bytes = io.BytesIO()
-                                    bu_df.to_excel(excel_bytes, index=False, engine='openpyxl')
-                                    zipf.writestr(f"BU_{bu}.xlsx", excel_bytes.getvalue())
-
                         # Compose Email
                         msg = EmailMessage()
                         filename = uploaded_file.name
@@ -86,7 +71,19 @@ if uploaded_file:
                         msg['To'] = recipients_input
                         msg.set_content("Please find attached BU-wise Excel files.")
 
-                        msg.add_attachment(zip_buffer.getvalue(), maintype="application", subtype="zip", filename="BU_Files.zip")
+                        # Attach each BU file individually
+                        for bu in selected_bu:
+                            bu_df = df[df["BU"] == bu]
+                            if not bu_df.empty:
+                                excel_bytes = io.BytesIO()
+                                bu_df.to_excel(excel_bytes, index=False, engine='openpyxl')
+                                excel_bytes.seek(0)
+                                msg.add_attachment(
+                                    excel_bytes.read(),
+                                    maintype="application",
+                                    subtype="vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                    filename=f"BU_{bu}.xlsx"
+                                )
 
                         # Send Email
                         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
