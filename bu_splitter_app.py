@@ -8,12 +8,11 @@ from email.message import EmailMessage
 from email.utils import formataddr
 from datetime import datetime
 
-
-# --- Gmail Credentials (fill before deploying) ---
-SENDER_EMAIL = "kalpesh4158@gmail.com"
-SENDER_NAME = "Kalpesh Patil"
-APP_PASSWORD = "qqiazpnwykpcauqu"
-DEFAULT_RECIPIENTS = ["manzemanali@gmail.com", "kalpesh4158@gmail.com"]
+# --- Load Secure Credentials from Streamlit Secrets ---
+SENDER_EMAIL = st.secrets["SENDER_EMAIL"]
+SENDER_NAME = "BU Exporter"
+APP_PASSWORD = st.secrets["APP_PASSWORD"]
+DEFAULT_RECIPIENTS = ["recipient1@example.com", "recipient2@example.com"]
 
 st.set_page_config(page_title="BU Splitter & Mailer", layout="centered")
 st.title("📂 BU Splitter & Email Tool")
