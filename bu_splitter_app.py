@@ -30,6 +30,7 @@ if uploaded_file:
             grouped_bu = {
                 "BU_4158.xlsx": ["4158"],
                 "BU_4341.xlsx": ["4341"],
+                "BU_4697.xlsx": ["4341"],
                 "BU_4359_4360.xlsx": ["4359", "4360"]
             }
 
@@ -90,3 +91,4 @@ if uploaded_file:
         st.error(f"Failed to read file: {e}")
 else:
     st.info("Please upload an Excel file with BU column.")
+
