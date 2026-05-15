@@ -60,7 +60,7 @@ if uploaded_file:
 
                 required_cols = [
                     "Smart Metetered Cons (Y/N)",
-                    "Meter Type"
+                    "Meter_type_code"
                 ]
 
                 for col in required_cols:
