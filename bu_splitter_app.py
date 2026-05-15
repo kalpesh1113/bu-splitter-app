@@ -78,7 +78,7 @@ if uploaded_file:
                         )
                         &
                         (
-                            dataframe["Meter Type"]
+                            dataframe["Meter_type_code"]
                             .astype(str)
                             .str.strip()
                             != "61"
